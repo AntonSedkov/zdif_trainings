@@ -1,0 +1,38 @@
+<h1 [ngClass]="isGreen ? 'text-green' : 'text-red'">
+  {{ text | uppercase }}
+</h1>
+
+
+<ul *ngIf="numbers.length > 0">
+  <li *ngFor="let number of numbers">{{ number }}</li>
+</ul>
+
+<p *ngIf="numbers.length == 0"> No data</p>
+
+
+{{ cash | currency: 'EUR' }}
+<br/>
+{{ date }}
+<br/>
+{{ date | date}}
+<br/>
+{{ date | date: 'shortDate' }}
+
+<br/><br/><br/><br/>
+
+<input type="text" name="" id="" [disabled]="isDisabled">
+
+<br/>
+
+<button (click)="onClick()">Click</button>
+
+
+<br/><br/><br/><br/>
+
+
+<input type="text" [(ngModel)]="title">
+
+
+<br/>
+
+<h2>{{ title }}</h2>
