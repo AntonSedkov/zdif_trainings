@@ -1,5 +1,6 @@
 package anton.sample.dao;
 
+import anton.sample.exception.StorageException;
 import anton.sample.model.Resume;
 import org.junit.After;
 import org.junit.Assert;
@@ -47,14 +48,14 @@ public class ArrayStorageTest {
     }
 
     @Test
-    public void save() {
+    public void save() throws StorageException {
         storage.save(r1);
         int size = storage.size();
         Assert.assertEquals(1, size);
     }
 
     @Test
-    public void update() {
+    public void update() throws StorageException {
         storage.save(r1);
         String newName = "Olive Juvenal";
         r1.setFullName(newName);
@@ -64,14 +65,14 @@ public class ArrayStorageTest {
     }
 
     @Test
-    public void load() {
+    public void load() throws StorageException {
         storage.save(r1);
         Resume resume = storage.load(r1.getUuid());
         Assert.assertEquals(r1, resume);
     }
 
     @Test
-    public void delete() {
+    public void delete() throws StorageException {
         storage.save(r1);
         storage.delete(r1.getUuid());
         int size = storage.size();
@@ -79,7 +80,7 @@ public class ArrayStorageTest {
     }
 
     @Test
-    public void getAllSorted() {
+    public void getAllSorted() throws StorageException {
         storage.save(r1);
         storage.save(r2);
         storage.save(r3);
@@ -92,7 +93,7 @@ public class ArrayStorageTest {
     }
 
     @Test
-    public void size() {
+    public void size() throws StorageException {
         storage.save(r1);
         storage.save(r2);
         storage.save(r3);

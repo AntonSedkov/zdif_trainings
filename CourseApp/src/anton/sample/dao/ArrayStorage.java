@@ -1,81 +1,83 @@
 package anton.sample.dao;
 
+import anton.sample.exception.StorageException;
 import anton.sample.model.Resume;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * User: Sedkov Anton
  * Date: 08.06.2021
  */
-public class ArrayStorage implements IStorage {
+public class ArrayStorage extends AbstractStorage {
     private static final int SIZE = 100;
     private Resume[] array = new Resume[SIZE];
 
     @Override
-    public void clear() {
-        array = new Resume[SIZE];
-    }
-
-    @Override
-    public void save(Resume resume) {
-        int idx = -1;
+    protected boolean isExist(String uuid) {
         for (int i = 0; i < SIZE; i++) {
-            Resume resumeOld = array[i];
-            if (resumeOld != null) {
-                if (resume.equals(resumeOld)) {
-                    throw new IllegalStateException("Already present");
-                }
-            } else if (idx == -1) {
-                idx = i;
+            if (array[i].getUuid().equals(uuid)) {
+                return true;
             }
         }
-        array[idx] = resume;
+        return false;
     }
 
     @Override
-    public void update(Resume resume) {
+    public void doClear() {
+        Arrays.fill(array, null);
+    }
+
+    @Override
+    public void doSave(Resume resume) {
         for (int i = 0; i < SIZE; i++) {
-            if (array[i].equals(resume)) {
+            if (array[i] == null) {
+                array[i] = resume;
+            }
+        }
+    }
+
+    @Override
+    public void doUpdate(Resume resume) {
+        String idx = resume.getUuid();
+        for (int i = 0; i < SIZE; i++) {
+            if (array[i].getUuid().equals(idx)) {
                 array[i] = resume;
                 return;
             }
         }
-        throw new IllegalStateException("Resume is not stored");
     }
 
     @Override
-    public Resume load(String uuid) {
-        Resume resume;
+    public Resume doLoad(String uuid) {
         for (int i = 0; i < SIZE; i++) {
             if (array[i].getUuid().equals(uuid)) {
-                resume = array[i];
-                return resume;
+                return array[i];
             }
         }
-        throw new IllegalStateException("Resume is not found");
+        return null;
     }
 
     @Override
-    public void delete(String uuid) {
+    public void doDelete(String uuid) {
         for (int i = 0; i < SIZE; i++) {
             if (array[i].getUuid().equals(uuid)) {
                 array[i] = null;
+                System.arraycopy(array, i + 1, array, i, SIZE - 1 - i);
                 return;
             }
         }
-        throw new IllegalStateException("Resume is not stored");
     }
 
     @Override
-    public Collection<Resume> getAllSorted() {
+    public Collection<Resume> doGetAll() {
         List<Resume> resumes = new ArrayList<>();
         for (Resume resume : array) {
             if (resume != null) {
                 resumes.add(resume);
+            } else {
+                break;
             }
         }
         resumes.sort(Comparator.comparing(Resume::getFullName, Comparator.naturalOrder()));
@@ -92,4 +94,5 @@ public class ArrayStorage implements IStorage {
         }
         return size;
     }
+
 }
