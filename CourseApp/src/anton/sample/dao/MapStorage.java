@@ -1,56 +1,57 @@
 package anton.sample.dao;
 
-import anton.sample.exception.StorageException;
 import anton.sample.model.Resume;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * User: Sedkov Anton
  * Date: 09.06.2021
  */
-public class MapStorage implements IStorage {
+public class MapStorage extends AbstractStorage {
     private Map<String, Resume> storage = new HashMap<>();
 
     @Override
-    public void clear() {
+    protected void doClear() {
         storage.clear();
     }
 
     @Override
-    public void save(Resume resume) throws StorageException {
-        storage.putIfAbsent(resume.getUuid(), resume);
+    protected boolean isExist(String uuid) {
+        return storage.containsKey(uuid);
     }
 
     @Override
-    public void update(Resume resume) throws StorageException {
-        String uuid = resume.getUuid();
-        if (storage.containsKey(uuid)) {
-            storage.put(uuid, resume);
-            return;
-        }
-        throw new StorageException();
+    protected void doSave(Resume resume) {
+        storage.put(resume.getUuid(), resume);
     }
 
     @Override
-    public Resume load(String uuid) throws StorageException {
-        return null;
+    protected void doUpdate(Resume resume) {
+        storage.put(resume.getUuid(), resume);
     }
 
     @Override
-    public void delete(String uuid) throws StorageException {
-
+    protected Resume doLoad(String uuid) {
+        return storage.get(uuid);
     }
 
     @Override
-    public Collection<Resume> getAllSorted() {
-        return null;
+    protected void doDelete(String uuid) {
+        storage.remove(uuid);
+    }
+
+    @Override
+    protected List<Resume> doGetAll() {
+        return new ArrayList<>(storage.values());
     }
 
     @Override
     public int size() {
-        return 0;
+        return storage.size();
     }
+
 }

@@ -4,6 +4,8 @@ import anton.sample.exception.StorageException;
 import anton.sample.model.Resume;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -70,9 +72,11 @@ public abstract class AbstractStorage implements IStorage {
     @Override
     public Collection<Resume> getAllSorted() {
         logger.info("Load resumes sorted by names.");
-        return doGetAll();
+        List<Resume> resumes = doGetAll();
+        resumes.sort(Comparator.comparing(Resume::getFullName, Comparator.naturalOrder()));
+        return resumes;
     }
 
-    protected abstract Collection<Resume> doGetAll();
+    protected abstract List<Resume> doGetAll();
 
 }

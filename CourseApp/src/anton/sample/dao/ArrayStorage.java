@@ -1,10 +1,10 @@
 package anton.sample.dao;
 
-import anton.sample.exception.StorageException;
 import anton.sample.model.Resume;
 
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * User: Sedkov Anton
@@ -12,14 +12,19 @@ import java.util.logging.Logger;
  */
 public class ArrayStorage extends AbstractStorage {
     private static final int SIZE = 100;
-    private Resume[] array = new Resume[SIZE];
+    private final Resume[] array = new Resume[SIZE];
 
     @Override
     protected boolean isExist(String uuid) {
-        for (int i = 0; i < SIZE; i++) {
+        int i = 0;
+        while (i < SIZE) {
+            if (array[i] == null) {
+                break;
+            }
             if (array[i].getUuid().equals(uuid)) {
                 return true;
             }
+            i++;
         }
         return false;
     }
@@ -34,6 +39,7 @@ public class ArrayStorage extends AbstractStorage {
         for (int i = 0; i < SIZE; i++) {
             if (array[i] == null) {
                 array[i] = resume;
+                return;
             }
         }
     }
@@ -71,7 +77,7 @@ public class ArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public Collection<Resume> doGetAll() {
+    public List<Resume> doGetAll() {
         List<Resume> resumes = new ArrayList<>();
         for (Resume resume : array) {
             if (resume != null) {
@@ -80,7 +86,6 @@ public class ArrayStorage extends AbstractStorage {
                 break;
             }
         }
-        resumes.sort(Comparator.comparing(Resume::getFullName, Comparator.naturalOrder()));
         return resumes;
     }
 

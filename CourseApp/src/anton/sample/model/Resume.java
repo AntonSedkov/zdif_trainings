@@ -1,5 +1,6 @@
 package anton.sample.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +19,8 @@ public class Resume {
 
     public Resume() {
         this.uuid = UUID.randomUUID().toString();
+        contacts = new ArrayList<>();
+        sections = new ArrayList<>();
     }
 
     public String getUuid() {
@@ -52,7 +55,7 @@ public class Resume {
         return contacts;
     }
 
-    public boolean add(Contact contact) {
+    public boolean addContact(Contact contact) {
         return contacts.add(contact);
     }
 
@@ -64,7 +67,7 @@ public class Resume {
         return sections;
     }
 
-    public boolean add(Section section) {
+    public boolean addSection(Section section) {
         return sections.add(section);
     }
 
