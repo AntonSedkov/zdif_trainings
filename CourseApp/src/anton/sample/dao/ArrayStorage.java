@@ -2,7 +2,6 @@ package anton.sample.dao;
 
 import anton.sample.model.Resume;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,94 +9,69 @@ import java.util.List;
  * User: Sedkov Anton
  * Date: 08.06.2021
  */
-public class ArrayStorage extends AbstractStorage {
-    private static final int SIZE = 100;
-    private final Resume[] array = new Resume[SIZE];
+public class ArrayStorage extends AbstractStorage<Integer> {
+    private static final int MAX_SIZE = 100;
+    private final Resume[] array = new Resume[MAX_SIZE];
+    private int currentSize = 0;
 
     @Override
-    protected boolean isExist(String uuid) {
-        int i = 0;
-        while (i < SIZE) {
-            if (array[i] == null) {
+    protected Integer getContext(String uuid) {
+        int index = 0;
+        while (index < MAX_SIZE) {
+            if (array[index] == null) {
                 break;
             }
-            if (array[i].getUuid().equals(uuid)) {
-                return true;
+            if (array[index].getUuid().equals(uuid)) {
+                return index;
             }
-            i++;
+            index++;
         }
-        return false;
+        return -1;
+    }
+
+    @Override
+    protected boolean isExist(Integer index) {
+        return index != -1;
     }
 
     @Override
     public void doClear() {
         Arrays.fill(array, null);
+        currentSize = 0;
     }
 
     @Override
-    public void doSave(Resume resume) {
-        for (int i = 0; i < SIZE; i++) {
-            if (array[i] == null) {
-                array[i] = resume;
-                return;
-            }
-        }
+    public void doSave(Integer index, Resume resume) {
+        array[currentSize++] = resume;
     }
 
     @Override
-    public void doUpdate(Resume resume) {
-        String idx = resume.getUuid();
-        for (int i = 0; i < SIZE; i++) {
-            if (array[i].getUuid().equals(idx)) {
-                array[i] = resume;
-                return;
-            }
-        }
+    public void doUpdate(Integer index, Resume resume) {
+        array[index] = resume;
     }
 
     @Override
-    public Resume doLoad(String uuid) {
-        for (int i = 0; i < SIZE; i++) {
-            if (array[i].getUuid().equals(uuid)) {
-                return array[i];
-            }
-        }
-        return null;
+    public Resume doLoad(Integer index) {
+        return array[index];
     }
 
     @Override
-    public void doDelete(String uuid) {
-        for (int i = 0; i < SIZE; i++) {
-            if (array[i].getUuid().equals(uuid)) {
-                array[i] = null;
-                System.arraycopy(array, i + 1, array, i, SIZE - 1 - i);
-                return;
-            }
+    public void doDelete(Integer index) {
+        int newSize = currentSize - 1 - index;
+        if (newSize > 0) {
+            System.arraycopy(array, index + 1, array, index, newSize);
         }
+        array[--currentSize] = null;                                           //for Garbage Collector
     }
 
     @Override
     public List<Resume> doGetAll() {
-        List<Resume> resumes = new ArrayList<>();
-        for (Resume resume : array) {
-            if (resume != null) {
-                resumes.add(resume);
-            } else {
-                break;
-            }
-        }
-        return resumes;
+        return Arrays.asList(Arrays.copyOf(array, currentSize));
     }
 
     @Override
     public int size() {
-        int size = 0;
-        for (Resume resume : array) {
-            if (resume != null) {
-                size++;
-            }
-        }
-        return size;
+        return currentSize;
     }
 
 }

@@ -11,12 +11,12 @@ import java.util.Map;
  * User: Sedkov Anton
  * Date: 09.06.2021
  */
-public class MapStorage extends AbstractStorage {
+public class MapStorage extends AbstractStorage<String> {
     private Map<String, Resume> storage = new HashMap<>();
 
     @Override
-    protected void doClear() {
-        storage.clear();
+    protected String getContext(String uuid) {
+        return uuid;
     }
 
     @Override
@@ -25,13 +25,18 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected void doSave(Resume resume) {
-        storage.put(resume.getUuid(), resume);
+    protected void doClear() {
+        storage.clear();
     }
 
     @Override
-    protected void doUpdate(Resume resume) {
-        storage.put(resume.getUuid(), resume);
+    protected void doSave(String uuid, Resume resume) {
+        storage.put(uuid, resume);
+    }
+
+    @Override
+    protected void doUpdate(String uuid, Resume resume) {
+        storage.put(uuid, resume);
     }
 
     @Override

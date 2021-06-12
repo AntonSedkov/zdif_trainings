@@ -11,7 +11,7 @@ import java.util.Collection;
  */
 public interface IStorage {
 
-    void clear();
+    void clear() throws StorageException;
 
     void save(Resume resume) throws StorageException;
 

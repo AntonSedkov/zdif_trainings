@@ -1,7 +1,6 @@
 package anton.sample.dao;
 
 import anton.sample.exception.StorageException;
-import anton.sample.model.Contact;
 import anton.sample.model.ContactType;
 import anton.sample.model.Resume;
 import org.junit.After;
@@ -27,8 +26,8 @@ abstract public class AbstractStorageTest {
         r1 = new Resume();
         r1.setFullName("Gregory Foe");
         r1.setLocation("Austria");
-        r1.addContact(new Contact(ContactType.MAIL, "mail@qq.we"));
-        r1.addContact(new Contact(ContactType.PHONE, "123456789"));
+        r1.addContact(ContactType.MAIL, "mail@qq.we");
+        r1.addContact(ContactType.PHONE, "123456789");
         r2 = new Resume();
         r2.setFullName("Antonius Lowery");
         r2.setLocation("China");
@@ -39,7 +38,11 @@ abstract public class AbstractStorageTest {
 
     @After
     public void after() {
-        storage.clear();
+        try {
+            storage.clear();
+        } catch (StorageException e) {
+            fail();
+        }
     }
 
     @Test

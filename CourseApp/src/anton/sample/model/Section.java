@@ -5,5 +5,4 @@ package anton.sample.model;
  * Date: 07.06.2021
  */
 public class Section {
-    protected SectionType type;
 }

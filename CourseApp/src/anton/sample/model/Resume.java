@@ -1,7 +1,7 @@
 package anton.sample.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -14,13 +14,24 @@ public class Resume {
     private String fullName;
     private String location;
     private String homePage;
-    private List<Contact> contacts;
-    private List<Section> sections;
+    private Map<ContactType, String> contacts;
+    private Map<SectionType, Section> sections;
+
+    public static final Resume EMPTY_RESUME;
+
+    static {
+        EMPTY_RESUME = new Resume();
+        for (SectionType type : SectionType.values()){
+/*
+            EMPTY_RESUME.addSection(type,type.getSectionClass().getEmptySection());
+*/
+        }
+    }
 
     public Resume() {
         this.uuid = UUID.randomUUID().toString();
-        contacts = new ArrayList<>();
-        sections = new ArrayList<>();
+        contacts = new EnumMap<>(ContactType.class);
+        sections = new EnumMap<>(SectionType.class);
     }
 
     public String getUuid() {
@@ -51,28 +62,20 @@ public class Resume {
         this.homePage = homePage;
     }
 
-    public List<Contact> getContacts() {
-        return contacts;
+    public String getContact(ContactType type) {
+        return contacts.get(type);
     }
 
-    public boolean addContact(Contact contact) {
-        return contacts.add(contact);
+    public void addContact(ContactType type, String contact) {
+        contacts.put(type, contact);
     }
 
-    public void setContacts(List<Contact> contacts) {
-        this.contacts = contacts;
+    public Section getSection(SectionType type) {
+        return sections.get(type);
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    public boolean addSection(Section section) {
-        return sections.add(section);
-    }
-
-    public void setSections(List<Section> sections) {
-        this.sections = sections;
+    public void addSection(SectionType type, Section section) {
+        sections.put(type, section);
     }
 
     @Override
