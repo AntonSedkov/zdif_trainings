@@ -37,7 +37,7 @@ public abstract class AbstractStorage<T> implements IStorage {
         doSave(context, resume);
     }
 
-    protected abstract void doSave(T context, Resume resume);
+    protected abstract void doSave(T context, Resume resume) throws StorageException;
 
     @Override
     public void update(Resume resume) throws StorageException {
@@ -49,7 +49,7 @@ public abstract class AbstractStorage<T> implements IStorage {
         doUpdate(context, resume);
     }
 
-    protected abstract void doUpdate(T context, Resume resume);
+    protected abstract void doUpdate(T context, Resume resume) throws StorageException;
 
     @Override
     public Resume load(String uuid) throws StorageException {
@@ -61,7 +61,7 @@ public abstract class AbstractStorage<T> implements IStorage {
         return doLoad(context);
     }
 
-    protected abstract Resume doLoad(T context);
+    protected abstract Resume doLoad(T context) throws StorageException;
 
     @Override
     public void delete(String uuid) throws StorageException {

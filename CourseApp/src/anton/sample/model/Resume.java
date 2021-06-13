@@ -1,5 +1,6 @@
 package anton.sample.model;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
@@ -9,7 +10,10 @@ import java.util.UUID;
  * Date: 06.06.2021
  */
 
-public class Resume {
+//todo Serial to All model classes
+public class Resume implements Serializable {
+    static final long serialVersionUID = 1L;
+
     private final String uuid;
     private String fullName;
     private String location;
@@ -21,7 +25,7 @@ public class Resume {
 
     static {
         EMPTY_RESUME = new Resume();
-        for (SectionType type : SectionType.values()){
+        for (SectionType type : SectionType.values()) {
 /*
             EMPTY_RESUME.addSection(type,type.getSectionClass().getEmptySection());
 */
@@ -62,12 +66,20 @@ public class Resume {
         this.homePage = homePage;
     }
 
+    public Map<ContactType, String> getContacts() {
+        return contacts;
+    }
+
     public String getContact(ContactType type) {
         return contacts.get(type);
     }
 
     public void addContact(ContactType type, String contact) {
         contacts.put(type, contact);
+    }
+
+    public Map<SectionType, Section> getSections() {
+        return sections;
     }
 
     public Section getSection(SectionType type) {

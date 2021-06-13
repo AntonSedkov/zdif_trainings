@@ -4,14 +4,15 @@ import anton.sample.exception.StorageException;
 import anton.sample.model.Resume;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
  * User: Sedkov Anton
  * Date: 12.06.2021
  */
-public class FileStorage extends AbstractStorage<File> {
-    private File dir;
+public abstract class FileStorage extends AbstractStorage<File> {
+    private final File dir;
 
     public FileStorage(String path) {
         this.dir = new File(path);
@@ -42,18 +43,23 @@ public class FileStorage extends AbstractStorage<File> {
     }
 
     @Override
-    protected void doSave(File file, Resume resume) {
-
+    protected void doSave(File file, Resume resume) throws StorageException {
+        try {
+            file.createNewFile();
+            writeFile(file, resume);
+        } catch (IOException e) {
+            throw new StorageException("Couldn't create file " + file.getAbsolutePath());
+        }
     }
 
     @Override
-    protected void doUpdate(File file, Resume resume) {
-
+    protected void doUpdate(File file, Resume resume) throws StorageException {
+        writeFile(file, resume);
     }
 
     @Override
-    protected Resume doLoad(File file) {
-        return null;
+    protected Resume doLoad(File file) throws StorageException {
+        return readFile(file);
     }
 
     @Override
@@ -65,11 +71,22 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected List<Resume> doGetAll() {
+        //todo
         return null;
     }
 
     @Override
     public int size() {
-        return 0;
+        int result = 0;
+        String[] list = dir.list();
+        if (list != null) {
+            result = list.length;
+        }
+        return result;
     }
+
+    abstract protected void writeFile(File file, Resume resume) throws StorageException;
+
+    abstract protected Resume readFile(File file) throws StorageException;
+
 }
