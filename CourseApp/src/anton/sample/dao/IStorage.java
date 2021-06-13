@@ -21,7 +21,7 @@ public interface IStorage {
 
     void delete(String uuid) throws StorageException;
 
-    Collection<Resume> getAllSorted();
+    Collection<Resume> getAllSorted() throws StorageException;
 
     int size();
 

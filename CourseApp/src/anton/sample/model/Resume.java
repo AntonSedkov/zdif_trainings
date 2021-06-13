@@ -1,6 +1,7 @@
 package anton.sample.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
@@ -10,11 +11,10 @@ import java.util.UUID;
  * Date: 06.06.2021
  */
 
-//todo Serial to All model classes
 public class Resume implements Serializable {
     static final long serialVersionUID = 1L;
 
-    private final String uuid;
+    private String uuid;
     private String fullName;
     private String location;
     private String homePage;
@@ -40,6 +40,10 @@ public class Resume implements Serializable {
 
     public String getUuid() {
         return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getFullName() {
@@ -88,6 +92,18 @@ public class Resume implements Serializable {
 
     public void addSection(SectionType type, Section section) {
         sections.put(type, section);
+    }
+
+    public void addObjective(String title, String comment) {
+        addSection(SectionType.OBJECTIVE, new TextWithTitleSection(title, comment));
+    }
+
+    public void addMultiTextSection(SectionType type, String... values) {
+        addSection(type, new MultiTextSection(Arrays.asList(values)));
+    }
+
+    public void addOrganizationSection() {
+        addSection(SectionType.EXPERIENCE, new OrganizationSection());//todo
     }
 
     @Override

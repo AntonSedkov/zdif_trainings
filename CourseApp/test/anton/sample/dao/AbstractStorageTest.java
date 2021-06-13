@@ -3,6 +3,7 @@ package anton.sample.dao;
 import anton.sample.exception.StorageException;
 import anton.sample.model.ContactType;
 import anton.sample.model.Resume;
+import anton.sample.model.SectionType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,10 @@ abstract public class AbstractStorageTest {
         r1.setLocation("Austria");
         r1.addContact(ContactType.MAIL, "mail@qq.we");
         r1.addContact(ContactType.PHONE, "123456789");
+        r1.addObjective("Objective","Ya");
+        r1.addMultiTextSection(SectionType.ACHIEVEMENT, "ach 1", "ACH 2", "AcH3");
+        r1.addMultiTextSection(SectionType.QUALIFICATION, "Qua1", "Java");
+        //todo exp and edu
         r2 = new Resume();
         r2.setFullName("Antonius Lowery");
         r2.setLocation("China");
@@ -67,6 +72,14 @@ abstract public class AbstractStorageTest {
         }
     }
 
+
+    @Test(expected = StorageException.class)
+    public void testSaveExisted() throws StorageException {
+        storage.save(r1);
+        storage.save(r2);
+        storage.save(r1);
+    }
+
     @Test
     public void testUpdate() {
         try {
@@ -79,6 +92,14 @@ abstract public class AbstractStorageTest {
         } catch (StorageException e) {
             fail();
         }
+    }
+
+    @Test(expected = StorageException.class)
+    public void testUpdateNotExisted() throws StorageException {
+        storage.save(r1);
+        storage.save(r2);
+        Resume notExist = new Resume();
+        storage.update(notExist);
     }
 
     @Test
@@ -112,6 +133,13 @@ abstract public class AbstractStorageTest {
         }
     }
 
+    @Test(expected = StorageException.class)
+    public void testDeleteNotExisted() throws StorageException {
+        storage.save(r1);
+        storage.save(r2);
+        storage.delete("NotExist");
+    }
+
     @Test
     public void getAllSorted() {
         try {
@@ -124,6 +152,18 @@ abstract public class AbstractStorageTest {
             expected.add(r3);
             expected.add(r1);
             assertEquals(expected, actual);
+        } catch (StorageException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testSize() {
+        try {
+            storage.save(r1);
+            storage.save(r2);
+            storage.save(r3);
+            assertEquals(3, storage.size());
         } catch (StorageException e) {
             fail();
         }

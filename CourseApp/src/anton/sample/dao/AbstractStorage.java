@@ -76,13 +76,13 @@ public abstract class AbstractStorage<T> implements IStorage {
     protected abstract void doDelete(T context) throws StorageException;
 
     @Override
-    public Collection<Resume> getAllSorted() {
+    public Collection<Resume> getAllSorted() throws StorageException {
         logger.info("Load resumes sorted by names.");
         List<Resume> resumes = doGetAll();
         resumes.sort(Comparator.comparing(Resume::getFullName, Comparator.naturalOrder()));
         return resumes;
     }
 
-    protected abstract List<Resume> doGetAll();
+    protected abstract List<Resume> doGetAll() throws StorageException;
 
 }

@@ -5,6 +5,9 @@ import anton.sample.model.Resume;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +26,7 @@ public abstract class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected File getContext(String fileName) {
-        return new File(fileName);
+        return new File(dir, fileName);
     }
 
     @Override
@@ -70,9 +73,16 @@ public abstract class FileStorage extends AbstractStorage<File> {
 
 
     @Override
-    protected List<Resume> doGetAll() {
-        //todo
-        return null;
+    protected List<Resume> doGetAll() throws StorageException {
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return Collections.emptyList();
+        }
+        List<Resume> resumes = new ArrayList<>(files.length);
+        for (File file : files) {
+            resumes.add(readFile(file));
+        }
+        return resumes;
     }
 
     @Override
