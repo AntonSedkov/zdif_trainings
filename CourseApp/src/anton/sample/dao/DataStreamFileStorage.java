@@ -1,12 +1,12 @@
 package anton.sample.dao;
 
 import anton.sample.exception.StorageException;
-import anton.sample.model.ContactType;
-import anton.sample.model.Resume;
-import anton.sample.model.Section;
-import anton.sample.model.SectionType;
+import anton.sample.model.*;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,17 +27,30 @@ public class DataStreamFileStorage extends FileStorage {
             writeString(dos, resume.getLocation());
             writeString(dos, resume.getHomePage());
             Map<ContactType, String> contacts = resume.getContacts();
-            dos.writeInt(contacts.size());
-            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
+            writeCollection(dos, contacts.entrySet(), entry -> {
                 writeString(dos, entry.getKey().name());
                 writeString(dos, entry.getValue());
-            }
+            });
             Map<SectionType, Section> sections = resume.getSections();
-            dos.writeInt(sections.size());
-            for (Map.Entry<SectionType, Section> entry : sections.entrySet()) {
-                writeString(dos, entry.getKey().name());
-                writeString(dos, entry.getValue().toString()); //todo
-            }
+            writeCollection(dos, sections.entrySet(), entry -> {
+                SectionType type = entry.getKey();
+                Section section = entry.getValue();
+                writeString(dos, type.name());
+                switch (type) {
+                    case OBJECTIVE:
+                        writeString(dos, ((TextWithTitleSection) section).getTitle());
+                        writeString(dos, ((TextWithTitleSection) section).getComment());
+                        break;
+                    case ACHIEVEMENT, QUALIFICATION:
+                        writeCollection(dos, ((MultiTextSection) section).getValues(), string -> writeString(dos, string));
+                        break;
+                    case EXPERIENCE, EDUCATION:
+                        //todo
+                        break;
+                    default:
+                        throw new EnumConstantNotPresentException(SectionType.class, type.name());
+                }
+            });
         } catch (IOException e) {
             throw new StorageException("Couldn't write a file " + file.getAbsolutePath());
         }
@@ -74,4 +87,27 @@ public class DataStreamFileStorage extends FileStorage {
         return str.equals(DEFAULT_STRING) ? null : str;
     }
 
+    private <T> void writeCollection(DataOutputStream dos, Collection<T> collection, ElementWriter<T> writer) throws IOException {
+        dos.writeInt(collection.size());
+        for (T item : collection) {
+            writer.write(item);
+        }
+    }
+
+    private <T> List<T> readList(DataInputStream dis, ElementReader<T> reader) throws IOException {
+        int listSize = dis.readInt();
+        List<T> list = new ArrayList<>(listSize);
+        for (int i = 0; i < listSize; i++) {
+            list.add(reader.read());
+        }
+        return list;
+    }
+
+    private interface ElementWriter<T> {
+        void write(T t) throws IOException;
+    }
+
+    private interface ElementReader<T> {
+        T read() throws IOException;
+    }
 }
