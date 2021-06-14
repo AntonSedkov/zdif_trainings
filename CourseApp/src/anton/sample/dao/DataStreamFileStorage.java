@@ -1,6 +1,5 @@
 package anton.sample.dao;
 
-import anton.sample.exception.StorageException;
 import anton.sample.model.*;
 
 import java.io.*;
@@ -20,9 +19,10 @@ public class DataStreamFileStorage extends FileStorage {
         super(path);
     }
 
-    protected void writeFile(File file, Resume resume) throws StorageException {
-        try (FileOutputStream fos = new FileOutputStream(file);
-             DataOutputStream dos = new DataOutputStream(fos)) {
+    @Override
+    protected void write(OutputStream outputStream, Resume resume) throws IOException {
+        try (DataOutputStream dos = new DataOutputStream(outputStream)) {
+            writeString(dos, resume.getUuid());
             writeString(dos, resume.getFullName());
             writeString(dos, resume.getLocation());
             writeString(dos, resume.getHomePage());
@@ -37,30 +37,23 @@ public class DataStreamFileStorage extends FileStorage {
                 Section section = entry.getValue();
                 writeString(dos, type.name());
                 switch (type) {
-                    case OBJECTIVE:
+                    case OBJECTIVE -> {
                         writeString(dos, ((TextWithTitleSection) section).getTitle());
                         writeString(dos, ((TextWithTitleSection) section).getComment());
-                        break;
-                    case ACHIEVEMENT, QUALIFICATION:
-                        writeCollection(dos, ((MultiTextSection) section).getValues(), string -> writeString(dos, string));
-                        break;
-                    case EXPERIENCE, EDUCATION:
-                        //todo
-                        break;
-                    default:
-                        throw new EnumConstantNotPresentException(SectionType.class, type.name());
+                    }
+                    case ACHIEVEMENT, QUALIFICATION -> writeCollection(dos, ((MultiTextSection) section).getValues(), string -> writeString(dos, string));
+                    case EXPERIENCE, EDUCATION -> System.out.println("");                        //todo
+                    default -> throw new EnumConstantNotPresentException(SectionType.class, type.name());
                 }
             });
-        } catch (IOException e) {
-            throw new StorageException("Couldn't write a file " + file.getAbsolutePath());
         }
     }
 
-    protected Resume readFile(File file) throws StorageException {
+    @Override
+    protected Resume read(InputStream inputStream) throws IOException {
         Resume resume = new Resume();
-        resume.setUuid(file.getName());
-        try (InputStream is = new FileInputStream(file);
-             DataInputStream dis = new DataInputStream(is)) {
+        try (DataInputStream dis = new DataInputStream(inputStream)) {
+            resume.setUuid(readString(dis));
             resume.setFullName(readString(dis));
             resume.setLocation(readString(dis));
             resume.setHomePage(readString(dis));
@@ -70,10 +63,15 @@ public class DataStreamFileStorage extends FileStorage {
             }
             int sectionsSize = dis.readInt();
             for (int i = 0; i < sectionsSize; i++) {
-                //         resume.addSection(SectionType.valueOf(dis.readUTF()), dis.readUTF());//todo
+                SectionType sectionType = SectionType.valueOf(readString(dis));
+                switch (sectionType) {
+                    case OBJECTIVE -> resume.addObjective(readString(dis), readString(dis));
+                    case ACHIEVEMENT, QUALIFICATION -> resume.addSection(sectionType,
+                            new MultiTextSection(readList(dis, () -> readString(dis))));
+                    case EDUCATION, EXPERIENCE -> System.out.println("");//todo
+                    default -> throw new EnumConstantNotPresentException(SectionType.class, sectionType.name());
+                }
             }
-        } catch (IOException e) {
-            throw new StorageException("Couldn't read a file " + file.getAbsolutePath());
         }
         return resume;
     }

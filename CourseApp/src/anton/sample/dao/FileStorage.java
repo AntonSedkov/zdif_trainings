@@ -3,10 +3,8 @@ package anton.sample.dao;
 import anton.sample.exception.StorageException;
 import anton.sample.model.Resume;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -95,8 +93,24 @@ public abstract class FileStorage extends AbstractStorage<File> {
         return result;
     }
 
-    abstract protected void writeFile(File file, Resume resume) throws StorageException;
+    protected void writeFile(File file, Resume resume) throws StorageException {
+        try {
+            write(new FileOutputStream(file), resume);
+        } catch (IOException e) {
+            throw new StorageException("Couldn't write a file " + file.getAbsolutePath(), e);
+        }
+    }
 
-    abstract protected Resume readFile(File file) throws StorageException;
+    protected Resume readFile(File file) throws StorageException {
+        try {
+            return read(new FileInputStream(file));
+        } catch (IOException e) {
+            throw new StorageException("Couldn't read a file " + file.getAbsolutePath(), e);
+        }
+    }
+
+    abstract protected void write(OutputStream outputStream, Resume resume) throws IOException;
+
+    abstract protected Resume read(InputStream inputStream) throws IOException, StorageException;
 
 }
