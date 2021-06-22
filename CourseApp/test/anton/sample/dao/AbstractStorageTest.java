@@ -4,7 +4,6 @@ import anton.sample.exception.StorageException;
 import anton.sample.model.ContactType;
 import anton.sample.model.Resume;
 import anton.sample.model.SectionType;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,6 +51,7 @@ abstract public class AbstractStorageTest {
         r3.setFullName("Bonita Juanita");
         r3.setLocation("Cuba");
     }
+/*
 
     @After
     public void after() {
@@ -61,6 +61,7 @@ abstract public class AbstractStorageTest {
             fail();
         }
     }
+*/
 
     @Test
     public void testClear() {
