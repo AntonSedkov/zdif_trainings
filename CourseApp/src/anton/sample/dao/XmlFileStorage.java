@@ -34,8 +34,4 @@ public class XmlFileStorage extends FileStorage {
         }
     }
 
-    @Override
-    public boolean isSectionSupported() {
-        return false;
-    }
 }

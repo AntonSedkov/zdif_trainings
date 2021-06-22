@@ -44,10 +44,10 @@ public class DataStreamFileStorage extends FileStorage {
                                 dos.writeUTF(organization.getLink().name());
                                 dos.writeUTF(organization.getLink().url());
                                 writeCollection(dos, organization.getPeriods(), organizationPeriod -> {
-                                    writeLocalDate(dos, organizationPeriod.startDate());
-                                    writeLocalDate(dos, organizationPeriod.endDate());
-                                    dos.writeUTF(organizationPeriod.position());
-                                    dos.writeUTF(organizationPeriod.content());
+                                    writeLocalDate(dos, organizationPeriod.getStartDate());
+                                    writeLocalDate(dos, organizationPeriod.getEndDate());
+                                    dos.writeUTF(organizationPeriod.getPosition());
+                                    dos.writeUTF(organizationPeriod.getContent());
                                 });
                             });
                     default -> throw new EnumConstantNotPresentException(SectionType.class, type.name());
