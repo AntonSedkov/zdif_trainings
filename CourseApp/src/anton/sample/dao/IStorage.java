@@ -25,4 +25,6 @@ public interface IStorage {
 
     int size();
 
+    boolean isSectionSupported();
+
 }

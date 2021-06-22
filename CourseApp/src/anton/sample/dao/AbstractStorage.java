@@ -85,4 +85,8 @@ public abstract class AbstractStorage<T> implements IStorage {
 
     protected abstract List<Resume> doGetAll() throws StorageException;
 
+    @Override
+    public boolean isSectionSupported() {
+        return true;
+    }
 }

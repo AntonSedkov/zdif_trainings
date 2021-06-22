@@ -3,18 +3,15 @@ package anton.sample.dao;
 import anton.sample.model.*;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.*;
 
 /**
  * User: Sedkov Anton
  * Date: 12.06.2021
  */
 public class DataStreamFileStorage extends FileStorage {
-    private static final String DEFAULT_STRING = "EMPTY_STRING";
-
     public DataStreamFileStorage(String path) {
         super(path);
     }
@@ -22,27 +19,37 @@ public class DataStreamFileStorage extends FileStorage {
     @Override
     protected void write(OutputStream outputStream, Resume resume) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(outputStream)) {
-            writeString(dos, resume.getUuid());
-            writeString(dos, resume.getFullName());
-            writeString(dos, resume.getLocation());
-            writeString(dos, resume.getHomePage());
+            dos.writeUTF(resume.getUuid());
+            dos.writeUTF(resume.getFullName());
+            dos.writeUTF(resume.getLocation());
+            dos.writeUTF(resume.getHomePage());
             Map<ContactType, String> contacts = resume.getContacts();
             writeCollection(dos, contacts.entrySet(), entry -> {
-                writeString(dos, entry.getKey().name());
-                writeString(dos, entry.getValue());
+                dos.writeUTF(entry.getKey().name());
+                dos.writeUTF(entry.getValue());
             });
             Map<SectionType, Section> sections = resume.getSections();
             writeCollection(dos, sections.entrySet(), entry -> {
                 SectionType type = entry.getKey();
                 Section section = entry.getValue();
-                writeString(dos, type.name());
+                dos.writeUTF(type.name());
                 switch (type) {
                     case OBJECTIVE -> {
-                        writeString(dos, ((TextWithTitleSection) section).getTitle());
-                        writeString(dos, ((TextWithTitleSection) section).getComment());
+                        dos.writeUTF(((TextWithTitleSection) section).getTitle());
+                        dos.writeUTF(((TextWithTitleSection) section).getComment());
                     }
-                    case ACHIEVEMENT, QUALIFICATION -> writeCollection(dos, ((MultiTextSection) section).getValues(), string -> writeString(dos, string));
-                    case EXPERIENCE, EDUCATION -> System.out.println("");                        //todo
+                    case ACHIEVEMENT, QUALIFICATION -> writeCollection(dos, ((MultiTextSection) section).getValues(), dos::writeUTF);
+                    case EXPERIENCE, EDUCATION -> writeCollection(
+                            dos, ((OrganizationSection) section).getOrganizations(), organization -> {
+                                dos.writeUTF(organization.getLink().name());
+                                dos.writeUTF(organization.getLink().url());
+                                writeCollection(dos, organization.getPeriods(), organizationPeriod -> {
+                                    writeLocalDate(dos, organizationPeriod.startDate());
+                                    writeLocalDate(dos, organizationPeriod.endDate());
+                                    dos.writeUTF(organizationPeriod.position());
+                                    dos.writeUTF(organizationPeriod.content());
+                                });
+                            });
                     default -> throw new EnumConstantNotPresentException(SectionType.class, type.name());
                 }
             });
@@ -53,36 +60,30 @@ public class DataStreamFileStorage extends FileStorage {
     protected Resume read(InputStream inputStream) throws IOException {
         Resume resume = new Resume();
         try (DataInputStream dis = new DataInputStream(inputStream)) {
-            resume.setUuid(readString(dis));
-            resume.setFullName(readString(dis));
-            resume.setLocation(readString(dis));
-            resume.setHomePage(readString(dis));
+            resume.setUuid(dis.readUTF());
+            resume.setFullName(dis.readUTF());
+            resume.setLocation(dis.readUTF());
+            resume.setHomePage(dis.readUTF());
             int contactsSize = dis.readInt();
             for (int i = 0; i < contactsSize; i++) {
-                resume.addContact(ContactType.valueOf(readString(dis)), readString(dis));
+                resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
             }
             int sectionsSize = dis.readInt();
             for (int i = 0; i < sectionsSize; i++) {
-                SectionType sectionType = SectionType.valueOf(readString(dis));
+                SectionType sectionType = SectionType.valueOf(dis.readUTF());
                 switch (sectionType) {
-                    case OBJECTIVE -> resume.addObjective(readString(dis), readString(dis));
+                    case OBJECTIVE -> resume.addObjective(dis.readUTF(), dis.readUTF());
                     case ACHIEVEMENT, QUALIFICATION -> resume.addSection(sectionType,
-                            new MultiTextSection(readList(dis, () -> readString(dis))));
-                    case EDUCATION, EXPERIENCE -> System.out.println("");//todo
+                            new MultiTextSection(readList(dis, dis::readUTF)));
+                    case EDUCATION, EXPERIENCE -> resume.addSection(sectionType,
+                            new OrganizationSection(readList(dis, () -> new Organization(new Link(dis.readUTF(), dis.readUTF()),
+                                    readList(dis, () -> new OrganizationPeriod(readLocalDate(dis),
+                                            readLocalDate(dis), dis.readUTF(), dis.readUTF()))))));
                     default -> throw new EnumConstantNotPresentException(SectionType.class, sectionType.name());
                 }
             }
         }
         return resume;
-    }
-
-    private void writeString(DataOutputStream dos, String str) throws IOException {
-        dos.writeUTF(str == null ? DEFAULT_STRING : str);
-    }
-
-    private String readString(DataInputStream dis) throws IOException {
-        String str = dis.readUTF();
-        return str.equals(DEFAULT_STRING) ? null : str;
     }
 
     private <T> void writeCollection(DataOutputStream dos, Collection<T> collection, ElementWriter<T> writer) throws IOException {
@@ -99,6 +100,17 @@ public class DataStreamFileStorage extends FileStorage {
             list.add(reader.read());
         }
         return list;
+    }
+
+    private void writeLocalDate(DataOutputStream dos, LocalDate ld) throws IOException {
+        Objects.requireNonNull(ld, "LocalDate cannot be null, use OrganizationPeriod.NOWADAYS");
+        dos.writeInt(ld.getYear());
+        dos.writeUTF(ld.getMonth().name());
+        dos.writeInt(ld.getDayOfMonth());
+    }
+
+    private LocalDate readLocalDate(DataInputStream dis) throws IOException {
+        return LocalDate.of(dis.readInt(), Month.valueOf(dis.readUTF()), dis.readInt());
     }
 
     private interface ElementWriter<T> {

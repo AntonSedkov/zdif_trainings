@@ -4,10 +4,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * User: Sedkov Anton
@@ -39,6 +36,9 @@ public class Resume implements Serializable {
 
     public Resume() {
         this.uuid = UUID.randomUUID().toString();
+        fullName = "";
+        location = "";
+        homePage = "";
         contacts = new EnumMap<>(ContactType.class);
         sections = new EnumMap<>(SectionType.class);
     }
@@ -48,6 +48,7 @@ public class Resume implements Serializable {
     }
 
     public void setUuid(String uuid) {
+        Objects.requireNonNull(uuid, "uuid is null");
         this.uuid = uuid;
     }
 
@@ -56,6 +57,7 @@ public class Resume implements Serializable {
     }
 
     public void setFullName(String fullName) {
+        Objects.requireNonNull(fullName, "fullName is null");
         this.fullName = fullName;
     }
 
@@ -64,6 +66,7 @@ public class Resume implements Serializable {
     }
 
     public void setLocation(String location) {
+        Objects.requireNonNull(location, "location is null");
         this.location = location;
     }
 
@@ -72,6 +75,7 @@ public class Resume implements Serializable {
     }
 
     public void setHomePage(String homePage) {
+        Objects.requireNonNull(homePage, "homePage is null");
         this.homePage = homePage;
     }
 
@@ -107,8 +111,8 @@ public class Resume implements Serializable {
         addSection(type, new MultiTextSection(Arrays.asList(values)));
     }
 
-    public void addOrganizationSection() {
-        addSection(SectionType.EXPERIENCE, new OrganizationSection());//todo
+    public void addOrganizationSection(SectionType type, Organization... organizations) {
+        addSection(type, new OrganizationSection(organizations));
     }
 
     @Override
@@ -135,5 +139,17 @@ public class Resume implements Serializable {
         result = 31 * result + (contacts != null ? contacts.hashCode() : 0);
         result = 31 * result + (sections != null ? sections.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Resume.class.getSimpleName() + "[", "]")
+                .add("uuid='" + uuid + "'")
+                .add("fullName='" + fullName + "'")
+                .add("location='" + location + "'")
+                .add("homePage='" + homePage + "'")
+                .add("contacts=" + contacts)
+                .add("sections=" + sections)
+                .toString();
     }
 }

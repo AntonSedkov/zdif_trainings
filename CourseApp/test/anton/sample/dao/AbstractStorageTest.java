@@ -1,12 +1,13 @@
 package anton.sample.dao;
 
 import anton.sample.exception.StorageException;
-import anton.sample.model.ContactType;
-import anton.sample.model.Resume;
-import anton.sample.model.SectionType;
+import anton.sample.model.*;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -28,22 +29,23 @@ abstract public class AbstractStorageTest {
         r1.setLocation("Austria");
         r1.addContact(ContactType.MAIL, "mail@qq.we");
         r1.addContact(ContactType.PHONE, "123456789");
-        r1.addObjective("Objective", "Ya");
-        r1.addMultiTextSection(SectionType.ACHIEVEMENT, "ach 1", "ACH 2", "AcH3");
-        r1.addMultiTextSection(SectionType.QUALIFICATION, "Qua1", "Java");
-   /*     r1.addOrganizationSection(SectionType.EXPERIENCE,
-                new Organization("CompanyOne", null,
-                        new OrganizationPeriod(LocalDate.of(2010, Month.APRIL, 2012, Month.FEBRUARY, "posOne", "dealOne")),
-                        new OrganizationPeriod(LocalDate.of(2012, Month.MAY, 2015, Month.DECEMBER, "posTwo", "dealTwo"))
-                ),
-                new Organization("CompanyTwo", "https://site.com"));
-        r1.addOrganizationSection(SectionType.EDUCATION,
-                new Organization("UniversityOne", null,
-                        new OrganizationPeriod(LocalDate.of(2004, Month.APRIL, 2008, Month.FEBRUARY, "student", "faculty 99")),
-                        new OrganizationPeriod(LocalDate.of(2008, Month.MAY, 2010, Month.DECEMBER, "bachelor", "faculty 1"))
-                ),
-                new Organization("UniversityTwo", "https://site.com"));*/
-        //todo exp and edu
+        if (storage.isSectionSupported()) {
+            r1.addObjective("Objective", "Ya");
+            r1.addMultiTextSection(SectionType.ACHIEVEMENT, "ach 1", "ACH 2", "AcH3");
+            r1.addMultiTextSection(SectionType.QUALIFICATION, "Qua1", "Java");
+            r1.addOrganizationSection(SectionType.EXPERIENCE,
+                    new Organization("CompanyOne", null,
+                            new OrganizationPeriod(LocalDate.of(2010, Month.APRIL, 1), OrganizationPeriod.NOWADAYS, "posOne", "dealOne"),
+                            new OrganizationPeriod(LocalDate.of(2012, Month.MAY, 20), LocalDate.of(2015, Month.DECEMBER, 15), "posTwo", "dealTwo")
+                    ),
+                    new Organization("CompanyTwo", "https://site.com")
+            );
+            r1.addOrganizationSection(SectionType.EDUCATION,
+                    new Organization("UniversityOne", null,
+                            new OrganizationPeriod(2004, Month.APRIL, 2008, Month.FEBRUARY, "student", "faculty 99"),
+                            new OrganizationPeriod(2008, Month.MAY, 2010, Month.DECEMBER, "bachelor", "faculty 1")),
+                    new Organization("UniversityTwo", "https://site.com"));
+        }
         r2 = new Resume();
         r2.setFullName("Antonius Lowery");
         r2.setLocation("China");
@@ -51,7 +53,6 @@ abstract public class AbstractStorageTest {
         r3.setFullName("Bonita Juanita");
         r3.setLocation("Cuba");
     }
-/*
 
     @After
     public void after() {
@@ -61,7 +62,6 @@ abstract public class AbstractStorageTest {
             fail();
         }
     }
-*/
 
     @Test
     public void testClear() {
