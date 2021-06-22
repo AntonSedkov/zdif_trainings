@@ -1,6 +1,8 @@
 package anton.sample.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,4 +14,10 @@ public class OrganizationSection extends Section implements Serializable {
 
     private List<Organization> organizations;
 
+    public OrganizationSection() {
+    }
+
+    public OrganizationSection(Organization... values) {
+        this.organizations = new ArrayList<>(Arrays.asList(values));
+    }
 }

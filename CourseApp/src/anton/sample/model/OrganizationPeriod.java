@@ -1,12 +1,31 @@
 package anton.sample.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.Month;
 
 /**
  * User: Sedkov Anton
  * Date: 07.06.2021
  */
-public record OrganizationPeriod(Date startDate, Date endDate, String position,
+
+@XmlAccessorType(XmlAccessType.FIELD)
+public record OrganizationPeriod(LocalDate startDate, LocalDate endDate, String position,
                                  String content) implements Serializable {
+    public static final long serialVersionUID = 1L;
+    public static final LocalDate NOWADAYS = LocalDate.MAX;
+
+    public OrganizationPeriod(LocalDate startDate, LocalDate endDate, String position, String content) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.position = position;
+        this.content = content;
+    }
+
+    public OrganizationPeriod(int startYear, Month startMonth, int endYear, Month endMonth, String position, String content) {
+        this(LocalDate.of(startYear, startMonth, 1), LocalDate.of(endYear, endMonth, 1), position, content);
+    }
+
 }

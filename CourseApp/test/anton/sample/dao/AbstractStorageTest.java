@@ -29,9 +29,21 @@ abstract public class AbstractStorageTest {
         r1.setLocation("Austria");
         r1.addContact(ContactType.MAIL, "mail@qq.we");
         r1.addContact(ContactType.PHONE, "123456789");
-        r1.addObjective("Objective","Ya");
+        r1.addObjective("Objective", "Ya");
         r1.addMultiTextSection(SectionType.ACHIEVEMENT, "ach 1", "ACH 2", "AcH3");
         r1.addMultiTextSection(SectionType.QUALIFICATION, "Qua1", "Java");
+   /*     r1.addOrganizationSection(SectionType.EXPERIENCE,
+                new Organization("CompanyOne", null,
+                        new OrganizationPeriod(LocalDate.of(2010, Month.APRIL, 2012, Month.FEBRUARY, "posOne", "dealOne")),
+                        new OrganizationPeriod(LocalDate.of(2012, Month.MAY, 2015, Month.DECEMBER, "posTwo", "dealTwo"))
+                ),
+                new Organization("CompanyTwo", "https://site.com"));
+        r1.addOrganizationSection(SectionType.EDUCATION,
+                new Organization("UniversityOne", null,
+                        new OrganizationPeriod(LocalDate.of(2004, Month.APRIL, 2008, Month.FEBRUARY, "student", "faculty 99")),
+                        new OrganizationPeriod(LocalDate.of(2008, Month.MAY, 2010, Month.DECEMBER, "bachelor", "faculty 1"))
+                ),
+                new Organization("UniversityTwo", "https://site.com"));*/
         //todo exp and edu
         r2 = new Resume();
         r2.setFullName("Antonius Lowery");
