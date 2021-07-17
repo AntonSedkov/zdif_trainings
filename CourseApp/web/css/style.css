@@ -75,17 +75,17 @@ a {
 }
 
 a[href^="mailto:"] {
-    background: url("../img/email.png") no-repeat scroll left center rgba(0, 0, 0, 0);
+    background: url("../../img/email.png") no-repeat scroll left center rgba(0, 0, 0, 0);
     padding-left: 20px;
 }
 
 a[href^="skype:"] {
-    background: url("../img/skype.png") no-repeat scroll left center rgba(0, 0, 0, 0);
+    background: url("../../img/skype.png") no-repeat scroll left center rgba(0, 0, 0, 0);
     padding-left: 20px;
 }
 
 a[href$=".pdf"] {
-    background: url("../img/pdf.png") no-repeat scroll left center rgba(0, 0, 0, 0);
+    background: url("../../img/pdf.png") no-repeat scroll left center rgba(0, 0, 0, 0);
     padding-left: 20px;
 }
 

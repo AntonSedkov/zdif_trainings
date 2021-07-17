@@ -27,4 +27,8 @@ public enum ContactType implements Serializable {
     public String getTitle() {
         return title;
     }
+
+    public String toHtml(String value) {
+        return title + ": " + value;
+    }
 }

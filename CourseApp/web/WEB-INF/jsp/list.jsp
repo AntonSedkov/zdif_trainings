@@ -1,8 +1,8 @@
 <%@ page import="anton.sample.WebAppConfig" %>
 <%@ page import="anton.sample.model.ContactType" %>
 <%@ page import="anton.sample.model.Resume" %>
+<%@ page import="anton.sample.util.HtmlUtil" %>
 <%@ page import="java.util.Collection" %>
-<%@ page import="anton.sample.exception.StorageException" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -17,7 +17,7 @@
 <section>
     <table>
         <tr>
-            <td colspan="5" style="text-align: right"><a href="resume?action=create"><img src="img/add.png"> Добавить
+            <td colspan="5" style="text-align: right"><a href="/resume?action=create"><img src="img/add.png"> Добавить
                 Резюме</a></td>
         </tr>
         <tr>
@@ -34,7 +34,7 @@
                         Collection<Resume> resumes = null;
                         try {
                             resumes = WebAppConfig.getInstance().getStorage().getAllSorted();
-                        } catch (StorageException e) {
+                        } catch (Throwable e) {
                             e.printStackTrace();
                         }
                         request.setAttribute("resumeList", resumes);

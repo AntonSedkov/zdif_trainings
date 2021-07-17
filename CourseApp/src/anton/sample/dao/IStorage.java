@@ -23,7 +23,7 @@ public interface IStorage {
 
     Collection<Resume> getAllSorted() throws StorageException;
 
-    int size();
+    int size() throws StorageException;
 
     boolean isSectionSupported();
 

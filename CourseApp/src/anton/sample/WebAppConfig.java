@@ -5,6 +5,7 @@ import anton.sample.dao.XmlFileStorage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 import java.util.logging.LogManager;
 
 /**
@@ -25,9 +26,12 @@ public class WebAppConfig {
     }
 
     private WebAppConfig() {
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream("logging.properties")) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("logging.properties");
+             InputStream webAppIs = getClass().getClassLoader().getResourceAsStream("database.properties")) {
             LogManager.getLogManager().readConfiguration(is);
-            storage = new XmlFileStorage("E:\\github\\zdif_trainings\\CourseApp\\file_storage");
+            Properties appProperties = new Properties();
+            appProperties.load(webAppIs);
+            storage = new XmlFileStorage(appProperties.getProperty("storage.dir"));
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
