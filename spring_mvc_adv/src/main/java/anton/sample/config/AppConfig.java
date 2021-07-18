@@ -37,7 +37,7 @@ public class AppConfig {
     @Bean
     public UrlBasedViewResolver setupViewResolver() {
         UrlBasedViewResolver viewResolver = new UrlBasedViewResolver();
-        viewResolver.setPrefix("/WEB-INF/pages");
+        viewResolver.setPrefix("/WEB-INF/pages/");
         viewResolver.setSuffix(".jsp");
         viewResolver.setViewClass(JstlView.class);
         viewResolver.setOrder(1);

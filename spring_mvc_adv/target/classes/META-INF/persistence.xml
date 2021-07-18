@@ -12,7 +12,7 @@
             <property name="javax.persistence.jdbc.password" value="antonio"/>
 
             <property name="hibernate.show.sql" value="true"/>
-            <property name="hibernate.dialect" value="true"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
         </properties>
 
