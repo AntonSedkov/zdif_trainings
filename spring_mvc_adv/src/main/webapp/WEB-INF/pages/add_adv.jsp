@@ -14,7 +14,7 @@
         <div class="form-group"><input type="text" class="form-control" name="longDesc" placeholder="Description"/></div>
         <div class="form-group"><input type="text" class="form-control" name="phone" placeholder="Phone"/></div>
         <div class="form-group"><input type="text" class="form-control" name="price" placeholder="Price"/></div>
-        <div class="form-group">Photo: <input type="file" name="photo"/></div>
+        <div class="form-group">Photo (max size 50 kB): <input type="file" name="photo"/></div>
 
         <div class="form-group"><input type="submit" class="btn btn-primary" value="Add"/></div>
     </form>
